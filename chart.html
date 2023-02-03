@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<body onload="chart()">
+
+<canvas id="myCanvas" width="1000" height="500" style="border:0px; padding:0px; margin:1%">
+Your browser does not support the HTML canvas tag.</canvas>
+
+<script>
+    function getMousePosition(canvas, event) {
+        let rect = canvas.getBoundingClientRect();
+        let x = event.clientX - rect.left;
+        let y = event.clientY - rect.top;
+        console.log("Coordinate x: " + x, 
+                    "Coordinate y: " + y);
+    }
+    
+       
+    
+    function chart(){
+        const mainCanvas = document.getElementById("myCanvas");
+        mainCanvas.addEventListener("mousedown", function(e)
+        {
+            getMousePosition(mainCanvas, e);
+        });
+        let canvasXstartPoint = 50;
+        let canvasYstartPoint = 50;
+        let canvasWidth = mainCanvas.width - canvasXstartPoint;
+        let canvasHeight =  mainCanvas.height - canvasYstartPoint;
+
+        let canvasActualWidth = mainCanvas.width;
+        let canvasActualHeight =  mainCanvas.height;
+
+        let devider = 20;
+        
+        let coordinates = [
+            {labelX:"Jan",labelY:"$",value:100},
+            {labelX:"Feb",labelY:"$",value:34},
+            {labelX:"March",labelY:"$",value:170},
+            {labelX:"April",labelY:"$",value:20},
+            {labelX:"May",labelY:"$",value:45},
+            {labelX:"June",labelY:"$",value:70},
+            {labelX:"july",labelY:"$",value:100},
+            {labelX:"Aug",labelY:"$",value:10},
+            {labelX:"Sep",labelY:"$",value:60},
+            {labelX:"Oct",labelY:"$",value:20},
+            {labelX:"Nov",labelY:"$",value:80},
+            {labelX:"Dec",labelY:"$",value:70}
+        ];
+
+        let sortableCoordinates = [...coordinates];
+
+        sortableCoordinates = [...sortableCoordinates.sort( function ( a, b ) { return b.value - a.value; } )];
+        let sortableCoordinatesNumber = removeDuplicate(sortableCoordinates);
+        let coordinatedDivisionArr = createCoordinatedDivision(sortableCoordinatesNumber,devider)
+
+        // console.log("sortableCoordinates",sortableCoordinates);
+        // console.log("sortableCoordinatesNumber",sortableCoordinatesNumber);
+        // console.log("CoordinatedDivisionArr",coordinatedDivisionArr)
+    
+        var ctx = mainCanvas.getContext("2d");
+        ctx.font = "12px Arial";
+
+        //Y axis
+        ctx.beginPath();
+        ctx.strokeStyle = "#000";
+        ctx.moveTo(canvasXstartPoint,canvasYstartPoint);
+        ctx.lineTo(canvasXstartPoint,canvasHeight);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        //X axis
+        ctx.beginPath();
+        ctx.strokeStyle = "#000";
+        ctx.moveTo(canvasXstartPoint,canvasHeight);
+        ctx.lineTo(canvasActualWidth,canvasHeight);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+
+        //draw coordinate boxes
+        let verticalLine = (canvasHeight - canvasYstartPoint)/coordinatedDivisionArr.length;
+        let horizontalLine = canvasWidth/coordinates.length;
+        let xAxis = canvasXstartPoint;
+        let yAxis = canvasYstartPoint;
+
+        console.log("verticalLine",verticalLine)
+        
+        ctx.beginPath();
+        ctx.strokeStyle = "#ccc";
+        for(let i = 0; i< coordinatedDivisionArr.length; i++){
+            ctx.moveTo(canvasYstartPoint,xAxis);
+            ctx.lineTo(canvasActualWidth,xAxis);
+            ctx.lineWidth = 1;
+            if(i == coordinatedDivisionArr.length -1){
+                ctx.stroke();  
+            }
+            let middlePOs = xAxis + 5;
+            ctx.fillText(coordinatedDivisionArr[i],0,middlePOs);
+           
+            // coordinates.forEach((elm,ind)=>{
+            //     if(elm.value < coordinatedDivisionArr[i] ){
+            //         elm.actualCoords = xAxis + ((coordinatedDivisionArr[i] - elm.value) / elm.value * verticalLine)
+            //     }else if(elm.value == coordinatedDivisionArr[i] ){
+            //         elm.actualCoords = xAxis;
+            //     }
+            // })
+            xAxis += verticalLine;
+            
+        }
+
+        for(let i = 0; i< coordinates.length; i++){
+            ctx.moveTo(yAxis,canvasYstartPoint);
+            ctx.lineTo(yAxis,canvasHeight);
+            ctx.lineWidth = 1;
+            if(i == coordinates.length -1){
+                ctx.stroke();  
+            }
+            let middlePOs = (yAxis + horizontalLine / 2) - ctx.measureText(coordinates[i]["labelX"]).width + 2;
+            ctx.fillText(coordinates[i]["labelX"], middlePOs,canvasHeight + 20);
+            coordinates[i]['verticalCoordinates'] = yAxis + horizontalLine / 2
+            yAxis += horizontalLine;
+        }
+
+
+        //stroke coordinate line
+        // let x = canvasXstartPoint;
+        // let y;
+        // let u = horizontalLine;
+        // ctx.beginPath();
+        // ctx.strokeStyle = "#FF0000";
+        // coordinates.unshift({labelX:"",labelY:"",value:0, actualCoords:canvasHeight});
+        // console.log("coordinates",coordinates)
+        // for(let i = 0; i< coordinates.length; i++){
+        //     if(i == 0){
+        //         ctx.moveTo(x,canvasHeight);
+        //     }
+        //     y = coordinates[i]['actualCoords'];
+        //     x = coordinates[i]['verticalCoordinates'];
+        //     ctx.fillText(coordinates[i]['labelY']+""+coordinates[i]['value'], x,y);
+        //     ctx.lineTo(x,y);
+        //     ctx.lineWidth = 1;
+          
+        //     if(i == coordinates.length -1){
+        //         ctx.stroke();
+        //     }
+        // }
+        
+    }
+
+    function removeDuplicate(obj){
+        let newObj = [];
+        obj.forEach((elm,ind)=>{
+            if( newObj.indexOf(elm.value) < 0 ){
+                newObj.push(elm.value)
+            }
+        });
+        return newObj;
+    }
+
+    function createCoordinatedDivision(coords,devider){
+        let newObj = [];
+        for(let i = coords[0]; i > 0; i -= devider){
+            newObj.push(i)
+        }
+        return newObj;
+    }
+
+</script>
+
+</body>
+</html>
+
