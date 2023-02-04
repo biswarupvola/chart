@@ -35,13 +35,13 @@ Your browser does not support the HTML canvas tag.</canvas>
         let coordinates = [
             {labelX:"Jan",labelY:"$",value:100},
             {labelX:"Feb",labelY:"$",value:34},
-            {labelX:"March",labelY:"$",value:170},
+            {labelX:"March",labelY:"$",value:500},
             {labelX:"April",labelY:"$",value:20},
             {labelX:"May",labelY:"$",value:45},
             {labelX:"June",labelY:"$",value:70},
             {labelX:"july",labelY:"$",value:100},
             {labelX:"Aug",labelY:"$",value:10},
-            {labelX:"Sep",labelY:"$",value:60},
+            {labelX:"Sep",labelY:"$",value:184},
             {labelX:"Oct",labelY:"$",value:20},
             {labelX:"Nov",labelY:"$",value:80},
             {labelX:"Dec",labelY:"$",value:70}
@@ -52,11 +52,8 @@ Your browser does not support the HTML canvas tag.</canvas>
         sortableCoordinates = [...sortableCoordinates.sort( function ( a, b ) { return b.value - a.value; } )];
         let sortableCoordinatesNumber = removeDuplicate(sortableCoordinates);
         let coordinatedDivisionArr = createCoordinatedDivision(sortableCoordinatesNumber,devider)
+        let allCoords = [];
 
-        // console.log("sortableCoordinates",sortableCoordinates);
-        // console.log("sortableCoordinatesNumber",sortableCoordinatesNumber);
-        // console.log("CoordinatedDivisionArr",coordinatedDivisionArr)
-    
         var ctx = mainCanvas.getContext("2d");
         ctx.font = "12px Arial";
 
@@ -78,35 +75,68 @@ Your browser does not support the HTML canvas tag.</canvas>
         
 
         //draw coordinate boxes
-        let verticalLine = (canvasHeight - canvasYstartPoint)/coordinatedDivisionArr.length;
-        let horizontalLine = canvasWidth/coordinates.length;
+        //let verticalLine = (canvasHeight - canvasYstartPoint)/coordinatedDivisionArr.length;
+        let horizontalLine = (canvasWidth - canvasXstartPoint) /coordinates.length;
         let xAxis = canvasXstartPoint;
-        let yAxis = canvasYstartPoint;
+        let yAxis = canvasYstartPoint + horizontalLine;
+        let actCoords = canvasXstartPoint;
 
-        console.log("verticalLine",verticalLine)
+
+        let smallDevider = (canvasHeight - canvasYstartPoint)/ coordinatedDivisionArr[0];
+
+        console.log("smallDevider",smallDevider)
         
         ctx.beginPath();
         ctx.strokeStyle = "#ccc";
-        for(let i = 0; i< coordinatedDivisionArr.length; i++){
-            ctx.moveTo(canvasYstartPoint,xAxis);
-            ctx.lineTo(canvasActualWidth,xAxis);
-            ctx.lineWidth = 1;
-            if(i == coordinatedDivisionArr.length -1){
-                ctx.stroke();  
-            }
-            let middlePOs = xAxis + 5;
-            ctx.fillText(coordinatedDivisionArr[i],0,middlePOs);
+        
+        for(let i = coordinatedDivisionArr[0]; i >= 0 ; i--){
+            ctx.moveTo(canvasYstartPoint,actCoords);
+            allCoords.push({ yValue:i, actCoords:actCoords});
+            coordinatedDivisionArr.forEach((elm,ind)=>{
+                if(i == elm){
+                    ctx.lineTo(canvasActualWidth,actCoords);
+                    ctx.fillText(elm,0,actCoords+2);
+                   
+                }
+            })
            
-            // coordinates.forEach((elm,ind)=>{
-            //     if(elm.value < coordinatedDivisionArr[i] ){
-            //         elm.actualCoords = xAxis + ((coordinatedDivisionArr[i] - elm.value) / elm.value * verticalLine)
-            //     }else if(elm.value == coordinatedDivisionArr[i] ){
-            //         elm.actualCoords = xAxis;
-            //     }
-            // })
-            xAxis += verticalLine;
-            
+            actCoords += smallDevider;
         }
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+
+        // for(let i = 0; i< coordinatedDivisionArr.length; i++){
+        //     ctx.moveTo(canvasYstartPoint,xAxis);
+        //     ctx.lineTo(canvasActualWidth,xAxis);
+        //     ctx.lineWidth = 1;
+        //     if(i == coordinatedDivisionArr.length -1){
+        //         ctx.stroke();  
+        //     }
+
+        //     //Y axis value text print
+        //     let middlePOs = xAxis + 5;
+        //     ctx.fillText(coordinatedDivisionArr[i],0,middlePOs);
+
+        //     let yVal = coordinatedDivisionArr[i];
+            
+        //     for(let k = 0; k< devider; k++){
+        //         if(yVal >0){
+        //             allCoords.push({ yValue:yVal, actCoords:actCoords});
+        //             yVal -= 1;
+        //             actCoords += kumund;
+        //         }
+        //     }
+           
+        //     // coordinates.forEach((elm,ind)=>{
+        //     //     if(elm.value < coordinatedDivisionArr[i] ){
+        //     //         elm.actualCoords = xAxis + ((coordinatedDivisionArr[i] - elm.value) / elm.value * verticalLine)
+        //     //     }else if(elm.value == coordinatedDivisionArr[i] ){
+        //     //         elm.actualCoords = xAxis;
+        //     //     }
+        //     // })
+        //     xAxis += verticalLine;
+            
+        // }
 
         for(let i = 0; i< coordinates.length; i++){
             ctx.moveTo(yAxis,canvasYstartPoint);
@@ -115,35 +145,39 @@ Your browser does not support the HTML canvas tag.</canvas>
             if(i == coordinates.length -1){
                 ctx.stroke();  
             }
-            let middlePOs = (yAxis + horizontalLine / 2) - ctx.measureText(coordinates[i]["labelX"]).width + 2;
-            ctx.fillText(coordinates[i]["labelX"], middlePOs,canvasHeight + 20);
-            coordinates[i]['verticalCoordinates'] = yAxis + horizontalLine / 2
+            //let middlePOs = (yAxis + horizontalLine / 2) - ctx.measureText(coordinates[i]["labelX"]).width + 2;
+            ctx.fillText(coordinates[i]["labelX"], yAxis - 10,canvasActualHeight - 20);
+            coordinates[i]['verticalCoordinates'] = yAxis;
             yAxis += horizontalLine;
         }
 
+        console.log("allCoords",allCoords)
+        //stroke grapf line according to coordinates
+        let x = canvasXstartPoint;
+        let y;
+        let u = horizontalLine;
+        ctx.beginPath();
+        ctx.strokeStyle = "#FF0000";
+        coordinates.unshift({labelX:"",labelY:"",value:0, actualCoords:canvasHeight});
 
-        //stroke coordinate line
-        // let x = canvasXstartPoint;
-        // let y;
-        // let u = horizontalLine;
-        // ctx.beginPath();
-        // ctx.strokeStyle = "#FF0000";
-        // coordinates.unshift({labelX:"",labelY:"",value:0, actualCoords:canvasHeight});
-        // console.log("coordinates",coordinates)
-        // for(let i = 0; i< coordinates.length; i++){
-        //     if(i == 0){
-        //         ctx.moveTo(x,canvasHeight);
-        //     }
-        //     y = coordinates[i]['actualCoords'];
-        //     x = coordinates[i]['verticalCoordinates'];
-        //     ctx.fillText(coordinates[i]['labelY']+""+coordinates[i]['value'], x,y);
-        //     ctx.lineTo(x,y);
-        //     ctx.lineWidth = 1;
+        for(let i = 0; i< coordinates.length; i++){
+            if(i == 0){
+                ctx.moveTo(x,canvasHeight);
+            }
+            allCoords.forEach((elm,ind)=>{
+                if(elm.yValue == coordinates[i]['value']){
+                    y = elm["actCoords"];
+                }
+            })
+            x = coordinates[i]['verticalCoordinates'];
+            ctx.fillText(coordinates[i]['labelY']+""+coordinates[i]['value'], x,y);
+            ctx.lineTo(x,y);
+            ctx.lineWidth = 2;
           
-        //     if(i == coordinates.length -1){
-        //         ctx.stroke();
-        //     }
-        // }
+            if(i == coordinates.length -1){
+                ctx.stroke();
+            }
+        }
         
     }
 
