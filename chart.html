@@ -1,203 +1,273 @@
 <!DOCTYPE html>
 <html>
-<body onload="chart()">
+    <head>
+        <script src="./chart_svg.js"></script>
+    </head>
+<body onload="">
 
-<canvas id="myCanvas" width="1000" height="500" style="border:0px; padding:0px; margin:1%">
-Your browser does not support the HTML canvas tag.</canvas>
+<!-- <canvas id="chartssss" width="1000" height="500" style="border:0px; padding:0px; margin:1%">
+Your browser does not support the HTML canvas tag.</canvas> -->
+
+<div id="chartssss" style="width:1000px;height:500px"></div>
 
 <script>
-    function getMousePosition(canvas, event) {
-        let rect = canvas.getBoundingClientRect();
-        let x = event.clientX - rect.left;
-        let y = event.clientY - rect.top;
-        console.log("Coordinate x: " + x, 
-                    "Coordinate y: " + y);
-    }
     
-       
+    // const mainCanvas = document.getElementById("myCanvas");
+    // const lineColors = ["#F44336","#01579B","#311B92","#558B2F","#3F51B5","#9E9D24","#C2185B"];
     
-    function chart(){
-        const mainCanvas = document.getElementById("myCanvas");
-        mainCanvas.addEventListener("mousedown", function(e)
-        {
-            getMousePosition(mainCanvas, e);
-        });
-        let canvasXstartPoint = 50;
-        let canvasYstartPoint = 50;
-        let canvasWidth = mainCanvas.width - canvasXstartPoint;
-        let canvasHeight =  mainCanvas.height - canvasYstartPoint;
+    // let canvasXstartPoint = 50;
+    // let canvasYstartPoint = 50;
+    // let canvasWidth = mainCanvas.width - canvasXstartPoint;
+    // let canvasHeight =  mainCanvas.height - canvasYstartPoint;
 
-        let canvasActualWidth = mainCanvas.width;
-        let canvasActualHeight =  mainCanvas.height;
+    // let canvasActualWidth = mainCanvas.width;
+    // let canvasActualHeight =  mainCanvas.height;
 
-        let devider = 20;
+    // let devider = 55;
+
+    let data1 = [123,349,10,47,12,-23,-44,-72];
+    let data2 = [223,49,51,47,320];
+    let data3 = [13,33,45,47,132,162,84,52];
+    let data = {
+           xAxis:{
+                  label:["Jan","feb","mar","april","may","jun","jul","august"],
+                  data:[data1,data2,data3]
+               },
+           yAxis:{
+            label:"$"
+           }
+      }
+    new webCharts("chartssss", data);
+
+    // let coordinates = data1.concat(data2);
+    
+    // function getMousePosition(canvas, event,coordinates,ctx) {
+    //     let storeRect;
+    //     let rect = canvas.getBoundingClientRect();
+    //     let x = event.clientX - rect.left;
+    //     let y = event.clientY - rect.top;
         
-        let coordinates = [
-            {labelX:"Jan",labelY:"$",value:100},
-            {labelX:"Feb",labelY:"$",value:34},
-            {labelX:"March",labelY:"$",value:500},
-            {labelX:"April",labelY:"$",value:20},
-            {labelX:"May",labelY:"$",value:45},
-            {labelX:"June",labelY:"$",value:70},
-            {labelX:"july",labelY:"$",value:100},
-            {labelX:"Aug",labelY:"$",value:10},
-            {labelX:"Sep",labelY:"$",value:184},
-            {labelX:"Oct",labelY:"$",value:20},
-            {labelX:"Nov",labelY:"$",value:80},
-            {labelX:"Dec",labelY:"$",value:70}
-        ];
+    // }
 
-        let sortableCoordinates = [...coordinates];
+    
+    // function chart(){
+        
+    //     let sortableCoordinates = [...coordinates];
+    //     sortableCoordinates = [...sortableCoordinates.sort( function ( a, b ) { return b.value - a.value; } )];
+    //     let sortableCoordinatesNumber = removeDuplicate(sortableCoordinates);
+        
+    //     let positiveVal = posNegValStore(sortableCoordinatesNumber,"positive");
+    //     let negeTiveVal = posNegValStore(sortableCoordinatesNumber,"negetive");
+    //     let coordinatedDivisionArr = createCoordinatedDivision(sortableCoordinatesNumber,devider);
+    //     let allCoords = [];
+    //     let divessionCoords = [];
 
-        sortableCoordinates = [...sortableCoordinates.sort( function ( a, b ) { return b.value - a.value; } )];
-        let sortableCoordinatesNumber = removeDuplicate(sortableCoordinates);
-        let coordinatedDivisionArr = createCoordinatedDivision(sortableCoordinatesNumber,devider)
-        let allCoords = [];
+    //     console.log("coordinatedDivisionArr",coordinatedDivisionArr);
+    //     console.log("positiveVal",positiveVal);
+    //     console.log("negeTiveVal",negeTiveVal)
 
-        var ctx = mainCanvas.getContext("2d");
-        ctx.font = "12px Arial";
+    //     var ctx = mainCanvas.getContext("2d");
+    //     //ctx.globalCompositeOperation='destination-over';
+    //     ctx.font = "12px Arial";
 
-        //Y axis
-        ctx.beginPath();
-        ctx.strokeStyle = "#000";
-        ctx.moveTo(canvasXstartPoint,canvasYstartPoint);
-        ctx.lineTo(canvasXstartPoint,canvasHeight);
-        ctx.lineWidth = 1;
-        ctx.stroke();
+    //     // //Y axis
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = "#000000";
+    //     ctx.moveTo(canvasXstartPoint,canvasYstartPoint);
+    //     ctx.lineTo(canvasXstartPoint,canvasHeight);
+    //     ctx.lineWidth = 1;
+    //     ctx.stroke();
 
-        //X axis
-        ctx.beginPath();
-        ctx.strokeStyle = "#000";
-        ctx.moveTo(canvasXstartPoint,canvasHeight);
-        ctx.lineTo(canvasActualWidth,canvasHeight);
-        ctx.lineWidth = 1;
-        ctx.stroke();
+    //     //X axis
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = "#000000";
+    //     ctx.moveTo(canvasXstartPoint,canvasHeight);
+    //     ctx.lineTo(canvasActualWidth,canvasHeight);
+    //     ctx.lineWidth = 1;
+    //     ctx.stroke();
         
 
-        //draw coordinate boxes
-        //let verticalLine = (canvasHeight - canvasYstartPoint)/coordinatedDivisionArr.length;
-        let horizontalLine = (canvasWidth - canvasXstartPoint) /coordinates.length;
-        let xAxis = canvasXstartPoint;
-        let yAxis = canvasYstartPoint + horizontalLine;
-        let actCoords = canvasXstartPoint;
+    //     //draw coordinate boxes
+    //     //let verticalLine = (canvasHeight - canvasYstartPoint)/coordinatedDivisionArr.length;
+    //     let horizontalLine = (canvasWidth) /coordinates.length;
+    //     let xAxis = canvasXstartPoint;
+    //     let yAxis = canvasYstartPoint;
+    //     let actCoords = canvasXstartPoint;
 
+    //     let smallDevider = negeTiveVal.length > 0 ? (canvasHeight - canvasYstartPoint)/ (positiveVal[0] + Math.abs(negeTiveVal[negeTiveVal.length - 1]))
+    //                         : (canvasHeight - canvasYstartPoint)/ (positiveVal[0]);
+    //     console.log("smallDevider",smallDevider)
 
-        let smallDevider = (canvasHeight - canvasYstartPoint)/ coordinatedDivisionArr[0];
-
-        console.log("smallDevider",smallDevider)
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = "#CFD8DC"; //"#00BCD4";
+    //     let maxLen = negeTiveVal.length > 0 ? negeTiveVal[negeTiveVal.length - 1] : 0;
         
-        ctx.beginPath();
-        ctx.strokeStyle = "#ccc";
-        
-        for(let i = coordinatedDivisionArr[0]; i >= 0 ; i--){
-            ctx.moveTo(canvasYstartPoint,actCoords);
-            allCoords.push({ yValue:i, actCoords:actCoords});
-            coordinatedDivisionArr.forEach((elm,ind)=>{
-                if(i == elm){
-                    ctx.lineTo(canvasActualWidth,actCoords);
-                    ctx.fillText(elm,0,actCoords+2);
-                   
-                }
-            })
+    //     for(let i = coordinatedDivisionArr[0]; i >= maxLen ; i--){
+    //         ctx.moveTo(canvasYstartPoint,actCoords);
+    //         allCoords.push({ yValue:i, actCoords:actCoords});
+    //         coordinatedDivisionArr.forEach((elm,ind)=>{
+    //             if(i == elm){
+    //                 ctx.lineTo(canvasActualWidth,actCoords);
+    //                 ctx.fillText(elm,0,actCoords+2);
+    //             }
+    //         })
            
-            actCoords += smallDevider;
-        }
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
+    //         actCoords += smallDevider;
+    //     }
+    //     ctx.lineWidth = 0.5;
+    //     ctx.stroke();
 
-        // for(let i = 0; i< coordinatedDivisionArr.length; i++){
-        //     ctx.moveTo(canvasYstartPoint,xAxis);
-        //     ctx.lineTo(canvasActualWidth,xAxis);
-        //     ctx.lineWidth = 1;
-        //     if(i == coordinatedDivisionArr.length -1){
-        //         ctx.stroke();  
-        //     }
-
-        //     //Y axis value text print
-        //     let middlePOs = xAxis + 5;
-        //     ctx.fillText(coordinatedDivisionArr[i],0,middlePOs);
-
-        //     let yVal = coordinatedDivisionArr[i];
+    //     for(let i = 0; i< coordinates.length; i++){
+    //         ctx.moveTo(yAxis,canvasYstartPoint);
+    //         if(i > 0){
+    //             ctx.lineTo(yAxis,canvasHeight);
+    //         }
             
-        //     for(let k = 0; k< devider; k++){
-        //         if(yVal >0){
-        //             allCoords.push({ yValue:yVal, actCoords:actCoords});
-        //             yVal -= 1;
-        //             actCoords += kumund;
-        //         }
-        //     }
-           
-        //     // coordinates.forEach((elm,ind)=>{
-        //     //     if(elm.value < coordinatedDivisionArr[i] ){
-        //     //         elm.actualCoords = xAxis + ((coordinatedDivisionArr[i] - elm.value) / elm.value * verticalLine)
-        //     //     }else if(elm.value == coordinatedDivisionArr[i] ){
-        //     //         elm.actualCoords = xAxis;
-        //     //     }
-        //     // })
-        //     xAxis += verticalLine;
+    //         ctx.lineWidth = 1;
+    //         if(i == coordinates.length -1){
+    //             ctx.stroke();  
+    //         }
+    //         ctx.fillText(coordinates[i]["labelX"], yAxis - 10,canvasActualHeight - 20);
+    //         coordinates[i]['verticalCoordinates'] = yAxis;
+    //         yAxis += horizontalLine;
+    //     }
+
+    //     console.log("allCoords",allCoords)
+
+    //     //stroke grapf line according to coordinates
+    //     let strokeThemeColor = lineColors[3];
+    //     let x = canvasXstartPoint;
+    //     let y;
+    //     let captionHeight = 25;
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = strokeThemeColor;
+    //     ctx.lineJoin = "round";
+    //     ctx.lineWidth = 2;
+    //     for(let i = 0; i< coordinates.length; i++){
+    //         allCoords.forEach((elm,ind)=>{
+    //             if(elm.yValue == coordinates[i]['value']){
+    //                 if(i == 0){
+    //                     ctx.moveTo(x,elm["actCoords"]);
+    //                 }
+    //                 y = elm["actCoords"];
+    //                 divessionCoords.push({ yValue:coordinates[i]['value'], actCoords:elm["actCoords"]})
+    //             }
+    //         })
+    //         x = coordinates[i]['verticalCoordinates'];
+    //         ctx.lineTo(x,y);
+    //         ctx.lineTo(x,y);
+    //         if(i == coordinates.length -1){
+    //             ctx.stroke();
+    //         }
+    //     }
+
+
+    //     // Draw circle on each point
+    //     for(let i = 0; i< coordinates.length; i++){
+    //         ctx.beginPath();
+    //         ctx.strokeStyle = strokeThemeColor;
+    //         ctx.fillStyle = strokeThemeColor;
+    //         allCoords.forEach((elm,ind)=>{
+    //             if(elm.yValue == coordinates[i]['value']){
+    //                 y = elm["actCoords"];
+    //             }
+    //         })
+    //         x = coordinates[i]['verticalCoordinates'];
+    //         ctx.arc(x, y, 4, 0, 2 * Math.PI);
+    //         ctx.closePath();
+    //         ctx.fill();
+    //         ctx.lineWidth = 2;
+    //         ctx.stroke();
+    //     }
+
+    //     //Draw captions
+    //     for(let i = 0; i< coordinates.length; i++){
+    //         let text = coordinates[i]['labelX']+":-"+coordinates[i]['labelY']+""+coordinates[i]['value'];
+    //         let textWidth = ctx.measureText(text).width + 20
+    //         allCoords.forEach((elm,ind)=>{
+    //             if(elm.yValue == coordinates[i]['value']){
+    //                 y = elm["actCoords"];
+    //             }
+    //         });
+    //         x = coordinates[i]['verticalCoordinates'];
+    //         ctx.beginPath();
+    //         ctx.fillStyle = "rgb(33,33,33,0.7)";
+    //         ctx.fillRect(x+2, y-captionHeight, textWidth, captionHeight);
             
-        // }
 
-        for(let i = 0; i< coordinates.length; i++){
-            ctx.moveTo(yAxis,canvasYstartPoint);
-            ctx.lineTo(yAxis,canvasHeight);
-            ctx.lineWidth = 1;
-            if(i == coordinates.length -1){
-                ctx.stroke();  
-            }
-            //let middlePOs = (yAxis + horizontalLine / 2) - ctx.measureText(coordinates[i]["labelX"]).width + 2;
-            ctx.fillText(coordinates[i]["labelX"], yAxis - 10,canvasActualHeight - 20);
-            coordinates[i]['verticalCoordinates'] = yAxis;
-            yAxis += horizontalLine;
-        }
+    //         ctx.beginPath();
+    //         ctx.fillStyle = strokeThemeColor;
+    //         ctx.fillRect(x+5, y-captionHeight+7, 10, 10);
+    //         ctx.fill();
 
-        console.log("allCoords",allCoords)
-        //stroke grapf line according to coordinates
-        let x = canvasXstartPoint;
-        let y;
-        let u = horizontalLine;
-        ctx.beginPath();
-        ctx.strokeStyle = "#FF0000";
-        coordinates.unshift({labelX:"",labelY:"",value:0, actualCoords:canvasHeight});
+    //         //text
+    //         ctx.beginPath();
+    //         ctx.fillStyle = "#fff";
+    //         ctx.fillText(coordinates[i]['labelX']+":-"+coordinates[i]['labelY']+""+coordinates[i]['value'], 
+    //                      x+18,y-(captionHeight - 16));
+    //     }
 
-        for(let i = 0; i< coordinates.length; i++){
-            if(i == 0){
-                ctx.moveTo(x,canvasHeight);
-            }
-            allCoords.forEach((elm,ind)=>{
-                if(elm.yValue == coordinates[i]['value']){
-                    y = elm["actCoords"];
-                }
-            })
-            x = coordinates[i]['verticalCoordinates'];
-            ctx.fillText(coordinates[i]['labelY']+""+coordinates[i]['value'], x,y);
-            ctx.lineTo(x,y);
-            ctx.lineWidth = 2;
-          
-            if(i == coordinates.length -1){
-                ctx.stroke();
-            }
-        }
+
+
+    //     //Draw 0 line
+    //     if(negeTiveVal.length > 0){
+    //         ctx.beginPath();
+    //         ctx.strokeStyle = "blue";
+    //         allCoords.forEach((elm,ind)=>{
+    //             if(elm.yValue == 0){
+    //                 ctx.moveTo(canvasXstartPoint,elm["actCoords"]);
+    //                 y = elm["actCoords"];
+    //             }
+    //         })
+    //         ctx.lineTo(canvasActualWidth,y);
+    //         ctx.setLineDash([5, 15]);
+    //         ctx.lineWidth = 1;
+    //         ctx.stroke();
+    //     }
         
-    }
+    //     mainCanvas.addEventListener("mousemove", function(e)
+    //     {
+    //         getMousePosition(mainCanvas, e,divessionCoords,ctx);
+    //     });
+        
+    // }
 
-    function removeDuplicate(obj){
-        let newObj = [];
-        obj.forEach((elm,ind)=>{
-            if( newObj.indexOf(elm.value) < 0 ){
-                newObj.push(elm.value)
-            }
-        });
-        return newObj;
-    }
+    // function removeDuplicate(obj){
+    //     let newObj = [];
+    //     obj.forEach((elm,ind)=>{
+    //         if( newObj.indexOf(elm.value) < 0 ){
+    //             newObj.push(elm.value)
+    //         }
+    //     });
+    //     return newObj;
+    // }
 
-    function createCoordinatedDivision(coords,devider){
-        let newObj = [];
-        for(let i = coords[0]; i > 0; i -= devider){
-            newObj.push(i)
-        }
-        return newObj;
-    }
+    // function createCoordinatedDivision(coords,devider){
+    //     let newObj = [];
+    //     for(let i = coords[0]; i >= coords[coords.length - 1]; i -= devider){
+    //         newObj.push(i)
+    //     }
+    //     if(newObj.indexOf(coords[coords.length - 1]) < 0){
+    //         newObj.push(coords[coords.length - 1])
+    //     }
+    //     return newObj;
+    // }
+
+    // function posNegValStore(arr,unit){
+    //     let newObj = [];
+    //     arr.forEach((elm) =>{
+    //         if(unit == "positive"){
+    //             if(elm > 0){
+    //                 newObj.push(elm)
+    //             }
+    //         }else if(unit == "negetive"){
+    //             if(elm < 0){
+    //                 newObj.push(elm)
+    //             }
+    //         }
+    //     })
+    //     return newObj;
+    // }
 
 </script>
 
