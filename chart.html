@@ -2,7 +2,13 @@
 <html>
     <head>
         <script src="./chart_svg.js"></script>
+       
     </head>
+    <style>
+        svg line:hover{
+            width:100px
+        }
+    </style>
 <body onload="">
 
 <!-- <canvas id="chartssss" width="1000" height="500" style="border:0px; padding:0px; margin:1%">
@@ -35,6 +41,12 @@ Your browser does not support the HTML canvas tag.</canvas> -->
                },
            yAxis:{
             label:"$"
+           },
+           label:{
+            color:"#EEEEEE",
+            background:"#212121",
+            border:0,
+            borderColor:"#ccc"
            }
       }
     new webCharts("chartssss", data);

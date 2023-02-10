@@ -11,8 +11,15 @@ class webCharts {
      *      yAxis:{}
      * }
      * ******/
+    let label = {
+        color:"#fff",
+        background:"#FDD835",
+        border:1,
+        borderColor:"#263238"
+       }
     this.canvasId = canvas;
     this.lineColors = ["#F44336","#01579B","#311B92","#558B2F","#3F51B5","#9E9D24","#C2185B","#E53935","#4A148C","#FFC300"];
+    this.label = data.label || label;
     this.data = data;
     this.canvas;
     this.ctx;
@@ -47,10 +54,14 @@ class webCharts {
     for(let i = 0; i< this.dataToDraw.length; i++){
         let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
         this.drawLineGraph(this.dataToDraw[i],lineColour);
-        this.drawCirClePoint(this.dataToDraw[i]);
+        //this.drawCirClePoint(this.dataToDraw[i]);
     }
    
-    // this.drawZeroLine() 
+    this.drawZeroLine();
+    setTimeout(()=>{
+        this.mouseEvent()
+    },30)
+     
   }
 
   init(){
@@ -61,59 +72,49 @@ class webCharts {
         this.canvasHeight =  this.canvas.clientHeight - this.canvasYstartPoint;
         this.canvasActualWidth = this.canvas.clientWidth;
         this.canvasActualHeight =  this.canvas.clientHeight;
-
         this.canvas.innerHTML = `<svg width="${this.canvasActualWidth}" height="${this.canvasActualHeight}"></svg> `;
-        //this.mouseEvent();
+
     }catch(err){
         throw err;
     }
   }
 
   mouseEvent(){
-    try{
-        this.canvas.addEventListener("mousemove", (e) =>
-        {
-            this.getMousePosition(e);
+    let verticalLines = document.getElementsByClassName("verticalLines");
+    console.log(verticalLines);
+
+    for(let i = 0; i< verticalLines.length; i++){
+        verticalLines[i].addEventListener("mouseover", (e) =>
+        {   
+            let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
+            let allCaption = document.getElementsByClassName("caption");
+           
+            for(let y =0; y< caption.length; y++){
+                caption[y].style.display = "block";
+            }
         });
-    }catch(err){
-        throw err;
+        verticalLines[i].addEventListener("mouseleave", (e) =>
+        {   
+            let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
+            let allCaption = document.getElementsByClassName("caption");
+          
+            for(let y =0; y< caption.length; y++){
+                caption[y].style.display = "none";
+            }
+        });
     }
     
   }
 
-    getMousePosition(event) {
-        let storeRect;
-        let rect = this.canvas.getBoundingClientRect();
-        let x = event.clientX - rect.left;
-        let y = event.clientY - rect.top;
-        let xCaption,yCaption,xLabel,yLabel,value;
-        for(let r = 0; r< this.captionArr.length; r++){
-            let vertic = this.captionArr[r]['verticalCoordinates'];
-
-            if(parseInt(vertic) -1 == parseInt(x) ){
-
-                //this.canvas.style.cursor = "pointer";
-                xCaption = parseInt(vertic);
-                yCaption = this.captionArr[r]['actCoords']-this.captionHeight;
-                xLabel = this.captionArr[r].xLabel;
-                yLabel = this.data.yAxis.label;
-                value = this.captionArr[r]['value'];
-                this.drawCaption(xCaption,yCaption,xLabel,yLabel,value);
-
-            }else if(parseInt(vertic) - 4 == parseInt(x) || parseInt(vertic) + 4 == parseInt(x)){
-                //this.ctx.reset();
-                //this.calculateBasicGrids(this.coordinates);
-                //this.drawVerticalLine(this.data.xAxis.label,this.data.xAxis.data,this.data.yAxis.label);
-                //this.createCaptionArr()
-                // for(let i = 0; i< this.dataToDraw.length; i++){
-                //     let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
-                //     this.drawLineGraph(this.dataToDraw[i],lineColour);
-                //     this.drawCirClePoint(this.dataToDraw[i]);
-                // }
-                
-            }
-        }
-    }
+    // getMousePosition(event) {
+    //     let rect = event.target.getBoundingClientRect();
+    //     let x = event.clientX - rect.left;
+    //     let y = event.clientY - rect.top;
+    //     console.log(event.clientX);
+    //     if(document.getElementsByClassName(y).length){
+    //         console.log(document.getElementsByClassName(y))
+    //     }
+    // }
 
   createsCoordinates(){
     let data = this.coordinates.concat( ...  this.data.xAxis.data);
@@ -156,6 +157,12 @@ class webCharts {
                                                 y2="${actCoords}" 
                                                 style="stroke:#CFD8DC;stroke-width:1" 
                                         />`;
+                this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                                                        <text x="${10}" y="${actCoords+2}" 
+                                                        font-family="Arial, Helvetica, sans-serif"
+                                                         style="font-size:12px">
+                                                        ${elm}
+                                                        </text>`;
             }
         });
         actCoords += smallDevider;
@@ -173,20 +180,28 @@ class webCharts {
     for(let i = 0; i< label.length; i++){
         if(i > 0){
             this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                                                <g data-caption="${yAxis}" class="">
                                                     <line x1="${yAxis}" y1="${this.canvasYstartPoint}" 
                                                         x2="${yAxis}" 
                                                         y2="${this.canvasHeight}" 
-                                                        style="stroke:#CFD8DC;stroke-width:1" 
-                                                    />`;
+                                                        style="stroke:#CFD8DC;
+                                                        stroke-width:1" 
+                                                    />
+                                                </g>`;
         }
         this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                            <text x="${yAxis - 5}" y="${this.canvasActualHeight - 20}">
+                                            <text x="${yAxis - 5}" y="${this.canvasActualHeight - 20}"
+                                            font-family="Arial, Helvetica, sans-serif"
+                                            font-size = "14px"
+                                            >
                                             ${label[i]}
                                             </text>`;
+        
         yAxis += verticalLine;
     }
 
     for(let f = 0; f< data.length; f++){
+
         let verticalCoordinates = this.canvasYstartPoint;
         let tempArr = [];
         for(let u = 0; u < data[f].length; u++){
@@ -227,7 +242,7 @@ class webCharts {
     let x1 = this.canvasXstartPoint;
     let x2;
     let y1 = this.canvasYstartPoint;
-    let y2 ;
+    let y2,xLabels ;
 
     for(let i = 0; i< coordinates.length; i++){
         
@@ -235,7 +250,7 @@ class webCharts {
             if(elm.yValue == coordinates[i]['value']){
                 y2 = elm["actCoords"];
             }
-            coordinates[i]["actCoords"] = y1
+            coordinates[i]["actCoords"] = y1;
         });
         x2 = coordinates[i]['verticalCoordinates'];
         if(i > 0){
@@ -245,11 +260,65 @@ class webCharts {
                                                 x2="${x2}" 
                                                 y2="${y2}" 
                                             style="stroke:${this.strokeThemeColor};stroke-width:2" />`;
+            
         }
+        
+        this.drawCirClePointWithOutLoop(x2,y2);
+        this.drawCirCaptionWithText(x2,y2,
+            this.data.xAxis.label[i],coordinates[i]['value'],
+            this.data.yAxis.label, this.strokeThemeColor,coordinates);
 
         x1 = coordinates[i]['verticalCoordinates'];
         y1 = y2
     }
+    // let circle = document.getElementsByClassName("circle");
+    // this.mouseEvent(circle,"mouseup",this.showCaption)
+  }
+
+  drawCirClePointWithOutLoop(x,y){
+    this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                                        <g class="circle" data-caption="${x}">
+                                            <circle 
+                                                cx="${x}" cy="${y}" r="4" 
+                                                stroke="${this.strokeThemeColor}" 
+                                                stroke-width="1" 
+                                                fill="${this.strokeThemeColor}" 
+                                            />
+                                        </g>`;
+  }
+  
+
+  drawCirCaptionWithText(x,y,xLabel,yLabel,value,boxColor,coordinates){
+    let text = xLabel+":"+"  "+yLabel+""+value;
+    let textWidth = text.length * 8 + 5;
+   
+    this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                                <g style="display:none" id="${x+y}" class="${x} caption">
+                                    <rect x="${x}" y="${y-26}" width="${textWidth}" 
+                                        height="22" rx="2"
+                                        style="fill:${this.label.background};
+                                        stroke-width:"${this.label.border};
+                                        stroke:"${this.label.borderColor}" />
+                                        
+                                        <text x="${x+22}" y="${y-10}"
+                                            font-size="12px"
+                                            font-family="Arial, Helvetica, sans-serif"
+                                            fill="${this.label.color}">
+                                                ${text}
+                                        </text>
+                                        <rect x="${x+2}" y="${y-20}" width="15" 
+                                        height="12" rx="2"
+                                        style="fill:${boxColor};
+                                        stroke-width:"0" />
+                                </g>`;
+
+    let length = this.canvasWidth / coordinates.length ;
+    this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                                        <g data-caption="${x}" class="verticalLines">
+                                            <rect x="${x}" y="${0}" width="${length}" 
+                                            height="${this.canvasHeight}"
+                                            style="fill:#eee;fill-opacity: 0" />
+                                        </g>`;
   }
 
   drawCirClePoint(coordinates){
@@ -275,26 +344,11 @@ class webCharts {
     }
   }
 
-  drawCaption(x,y,xLabels,yLabels,value){
-    //ctx.globalAlpha = 0.5;
-    //Draw captions
-    let text = xLabels+":-"+yLabels+""+value;
-    let textWidth = this.ctx.measureText(text).width + 20
-    this.ctx.beginPath();
-    this.ctx.fillStyle = "rgb(33,33,33,0.7)";
-    this.ctx.fillRect(x+2, y, textWidth, this.captionHeight);
-    
 
-    this.ctx.beginPath();
-    this.ctx.fillStyle = this.strokeThemeColor;
-    this.ctx.fillRect(x+5, y+7, 10, 10);
-    this.ctx.fill();
-
-    //text
-    this.ctx.beginPath();
-    this.ctx.fillStyle = "#fff";
-    this.ctx.fillText(xLabels+":-"+yLabels+""+value, x+18,y+16);
-
+  showCaption(){
+    console.log("ds")
+    // let ids = ds.getAttribute("data-caption");
+    // console.log(ids)
   }
 
   drawZeroLine(){
@@ -302,18 +356,15 @@ class webCharts {
      let x = this.canvasXstartPoint;
      let y;
      if(this.negeTiveVal.length > 0){
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = "blue";
         this.allCoords.forEach((elm,ind)=>{
             if(elm.yValue == 0){
-                this.ctx.moveTo(this.canvasXstartPoint,elm["actCoords"]);
                 y = elm["actCoords"];
             }
-        })
-        this.ctx.lineTo(this.canvasActualWidth,y);
-        this.ctx.setLineDash([5, 15]);
-        this.ctx.lineWidth = 1;
-        this.ctx.stroke();
+        });
+        this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+                        <g fill="none" stroke="black" stroke-width="1">
+                            <path stroke-dasharray="5,5" d="M${x-5} ${y} ${this.canvasActualWidth} ${y}" />
+                        </g>`;
     }
   }
 
