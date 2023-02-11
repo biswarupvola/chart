@@ -42,21 +42,21 @@ class webCharts {
     this.devider = 40;
     this.strokeThemeColor = "#000";
     this.captionHeight = 25;
+    this.bigLenData = [];
 
     //calling Function
     this.init();
     this.createsCoordinates();
     this.calculateBasicGrids(this.coordinates);
     this.drawVerticalLine(this.data.xAxis.label,this.data.xAxis.data,this.data.yAxis.label);
-    //this.createCaptionArr();
-
+    
     //draw lineGraph
     for(let i = 0; i< this.dataToDraw.length; i++){
         let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
-        this.drawLineGraph(this.dataToDraw[i],lineColour);
+        this.drawLineGraph(this.dataToDraw[i],lineColour,i);
         //this.drawCirClePoint(this.dataToDraw[i]);
     }
-   
+
     this.drawZeroLine();
     setTimeout(()=>{
         this.mouseEvent()
@@ -87,8 +87,7 @@ class webCharts {
         verticalLines[i].addEventListener("mouseover", (e) =>
         {   
             let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
-            let allCaption = document.getElementsByClassName("caption");
-           
+            
             for(let y =0; y< caption.length; y++){
                 caption[y].style.display = "block";
             }
@@ -96,8 +95,7 @@ class webCharts {
         verticalLines[i].addEventListener("mouseleave", (e) =>
         {   
             let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
-            let allCaption = document.getElementsByClassName("caption");
-          
+           
             for(let y =0; y< caption.length; y++){
                 caption[y].style.display = "none";
             }
@@ -122,6 +120,11 @@ class webCharts {
         let tempData = {value:elm};
         this.coordinates.push(tempData);
     });
+    let tempAr = [];
+    this.data.xAxis.data.forEach((elm,ind)=>{
+        tempAr.push({indx:ind,len:elm.length})
+    });
+    this.bigLenData = [...tempAr.sort( function ( a, b ) { return b.len - a.len; } )];
   }
 
   calculateBasicGrids(coordinates){
@@ -152,11 +155,13 @@ class webCharts {
         this.coordinatedDivisionArr.forEach((elm,ind)=>{
             if(i == elm){
                 this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                        <line x1="${this.canvasYstartPoint}" y1="${actCoords}" 
-                                                x2="${this.canvasActualWidth}" 
-                                                y2="${actCoords}" 
-                                                style="stroke:#CFD8DC;stroke-width:1" 
-                                        />`;
+                                        
+                                        <g fill="none" stroke="#CFD8DC" stroke-width="1">
+                                                    <path stroke-dasharray="5,5" 
+                                                        d="M${this.canvasYstartPoint} ${actCoords} 
+                                                        ${this.canvasActualWidth} ${actCoords}" 
+                                                    />
+                                                </g>`;
                 this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
                                                         <text x="${10}" y="${actCoords+2}" 
                                                         font-family="Arial, Helvetica, sans-serif"
@@ -180,12 +185,10 @@ class webCharts {
     for(let i = 0; i< label.length; i++){
         if(i > 0){
             this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                                <g data-caption="${yAxis}" class="">
-                                                    <line x1="${yAxis}" y1="${this.canvasYstartPoint}" 
-                                                        x2="${yAxis}" 
-                                                        y2="${this.canvasHeight}" 
-                                                        style="stroke:#CFD8DC;
-                                                        stroke-width:1" 
+                                                <g fill="none" stroke="#CFD8DC" stroke-width="1">
+                                                    <path stroke-dasharray="5,5" 
+                                                        d="M${yAxis} ${this.canvasYstartPoint} 
+                                                        ${yAxis} ${this.canvasHeight}" 
                                                     />
                                                 </g>`;
         }
@@ -236,13 +239,13 @@ class webCharts {
                                         style="stroke:#000000;stroke-width:1" />`;
   }
 
-  drawLineGraph(coordinates,lineColor){
+  drawLineGraph(coordinates,lineColor,index){
     //stroke grapf line according to coordinates
     this.strokeThemeColor = lineColor;
     let x1 = this.canvasXstartPoint;
     let x2;
     let y1 = this.canvasYstartPoint;
-    let y2,xLabels ;
+    let y2 ;
 
     for(let i = 0; i< coordinates.length; i++){
         
@@ -267,17 +270,19 @@ class webCharts {
         this.drawCirCaptionWithText(x2,y2,
             this.data.xAxis.label[i],coordinates[i]['value'],
             this.data.yAxis.label, this.strokeThemeColor,coordinates);
+        if(index == this.bigLenData[0]['indx']){
+            this.drawInvisibleGridForMouseEvent(x2,coordinates)
+        }
+       
 
         x1 = coordinates[i]['verticalCoordinates'];
         y1 = y2
     }
-    // let circle = document.getElementsByClassName("circle");
-    // this.mouseEvent(circle,"mouseup",this.showCaption)
   }
 
   drawCirClePointWithOutLoop(x,y){
     this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                        <g class="circle" data-caption="${x}">
+                                        <g class="circle" data-caption="${x}" style="pointer-events:none">
                                             <circle 
                                                 cx="${x}" cy="${y}" r="4" 
                                                 stroke="${this.strokeThemeColor}" 
@@ -312,10 +317,14 @@ class webCharts {
                                         stroke-width:"0" />
                                 </g>`;
 
-    let length = this.canvasWidth / coordinates.length ;
+   
+  }
+
+  drawInvisibleGridForMouseEvent(x,data){
+    let length = this.canvasWidth / data.length ;
     this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
                                         <g data-caption="${x}" class="verticalLines">
-                                            <rect x="${x}" y="${0}" width="${length}" 
+                                            <rect x="${x-5}" y="${0}" width="${length}" 
                                             height="${this.canvasHeight}"
                                             style="fill:#eee;fill-opacity: 0" />
                                         </g>`;
@@ -345,11 +354,6 @@ class webCharts {
   }
 
 
-  showCaption(){
-    console.log("ds")
-    // let ids = ds.getAttribute("data-caption");
-    // console.log(ids)
-  }
 
   drawZeroLine(){
      //Draw 0 line
