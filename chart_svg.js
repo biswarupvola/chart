@@ -39,10 +39,11 @@ class webCharts {
     this.allCoords = [];
     this.dataToDraw = [];
     this.captionArr = [];
-    this.devider = 40;
+    this.devider = 50;
     this.strokeThemeColor = "#000";
-    this.captionHeight = 25;
+    this.captionHeight = 35;
     this.bigLenData = [];
+    this.showLabelSeperateCircle = data.showLabelSeperateCircle || false;
 
     //calling Function
     this.init();
@@ -58,9 +59,14 @@ class webCharts {
     }
 
     this.drawZeroLine();
-    setTimeout(()=>{
-        this.mouseEvent()
-    },30)
+    //setTimeout(()=>{
+        if(!this.showLabelSeperateCircle){
+            this.mouseEventforAlltogeather()
+        }else{
+            this.mouseEventforeachPoint();
+        }
+        
+    //},30)
      
   }
 
@@ -79,7 +85,7 @@ class webCharts {
     }
   }
 
-  mouseEvent(){
+  mouseEventforAlltogeather(){
     let verticalLines = document.getElementsByClassName("verticalLines");
     console.log(verticalLines);
 
@@ -88,22 +94,53 @@ class webCharts {
         {   
             let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
             
-            for(let y =0; y< caption.length; y++){
-                caption[y].style.display = "block";
+            if(caption){               
+                for(let y =0; y< caption.length; y++){
+                    caption[y].style.display = "block";
+                }
             }
+            
         });
         verticalLines[i].addEventListener("mouseleave", (e) =>
         {   
             let caption = document.getElementsByClassName(verticalLines[i].getAttribute("data-caption"));
-           
-            for(let y =0; y< caption.length; y++){
-                caption[y].style.display = "none";
+            if(caption){
+                for(let y =0; y< caption.length; y++){
+                    caption[y].style.display = "none";
+                }
             }
         });
     }
     
   }
 
+  mouseEventforeachPoint(){
+    let verticalLines = document.getElementsByClassName("verticalLines");
+    for(let i = 0; i< verticalLines.length; i++){
+        verticalLines[i].style.pointerEvents = "none";
+    }
+    let circles = document.getElementsByClassName("circle");
+    console.log(circles);
+
+    for(let i = 0; i< circles.length; i++){
+        circles[i].addEventListener("mouseover", (e) =>
+        {   
+            let caption = document.getElementById(circles[i].getAttribute("data-id"));
+            if(caption){
+                caption.style.display = "block";              
+            }
+            
+        });
+        circles[i].addEventListener("mouseleave", (e) =>
+        {   
+            let caption = document.getElementById(circles[i].getAttribute("data-id"));
+            if(caption){
+                caption.style.display = "none";              
+            }
+        });
+    }
+    
+  }
     // getMousePosition(event) {
     //     let rect = event.target.getBoundingClientRect();
     //     let x = event.clientX - rect.left;
@@ -281,8 +318,9 @@ class webCharts {
   }
 
   drawCirClePointWithOutLoop(x,y){
+    let dataId = parseInt(x+y)
     this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                        <g class="circle" data-caption="${x}" style="pointer-events:none">
+                                        <g class="circle" data-caption="${x}" data-id=${dataId} style="pointer-events:auto;cursor: pointer">
                                             <circle 
                                                 cx="${x}" cy="${y}" r="4" 
                                                 stroke="${this.strokeThemeColor}" 
@@ -296,9 +334,9 @@ class webCharts {
   drawCirCaptionWithText(x,y,xLabel,yLabel,value,boxColor,coordinates){
     let text = xLabel+":"+"  "+yLabel+""+value;
     let textWidth = text.length * 8 + 5;
-   
+    let identi = parseInt(x+y)
     this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
-                                <g style="display:none" id="${x+y}" class="${x} caption">
+                                <g style="display:none" id="${identi}" class="${x} caption">
                                     <rect x="${x}" y="${y-26}" width="${textWidth}" 
                                         height="22" rx="2"
                                         style="fill:${this.label.background};
