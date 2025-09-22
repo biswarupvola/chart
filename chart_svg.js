@@ -49,14 +49,16 @@ class webCharts {
     this.init();
     this.createsCoordinates();
     this.calculateBasicGrids(this.coordinates);
-    this.drawVerticalLine(this.data.xAxis.label,this.data.xAxis.data,this.data.yAxis.label);
+    console.log(this.data.xAxis.label[0])
+    let xAxisLabels = this.optimizeXAxisLables(this.data.xAxis.label)
+    this.drawVerticalLine(xAxisLabels,this.data.xAxis.data,this.data.yAxis.label);
     
     //draw lineGraph
-    for(let i = 0; i< this.dataToDraw.length; i++){
-        let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
-        this.drawLineGraph(this.dataToDraw[i],lineColour,i);
-        //this.drawCirClePoint(this.dataToDraw[i]);
-    }
+    // for(let i = 0; i< this.dataToDraw.length; i++){
+    //     let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
+    //     this.drawLineGraphforSmallData(this.dataToDraw[i],lineColour,i);
+    //     //this.drawCirClePoint(this.dataToDraw[i]);
+    // }
 
     this.drawZeroLine();
     //setTimeout(()=>{
@@ -215,10 +217,27 @@ class webCharts {
     console.log("this.captionArr",this.captionArr)
   }
 
+  optimizeXAxisLables(label){
+    let optimizeLable = [];
+    let verticalLine = (this.canvasWidth) / label.length;
+    let incrementNumber = parseInt((this.canvasWidth) / 100);
+    console.log("canvasWidth--",this.canvasWidth,"...label.length...",label.length,"..verticalLine...",verticalLine,"..incrementNumber..",incrementNumber)
+    
+    if(verticalLine < 40){ // too many labels can't placed.
+        for(let i = 0; i< label.length; i= i+8){
+            optimizeLable.push(label[i])
+        }
+        verticalLine = (this.canvasWidth) / optimizeLable.length;
+    }else{
+        optimizeLable = label;
+    }
+    return optimizeLable;
+  }
   
   drawVerticalLine (label,data,yLabel){
     let verticalLine = (this.canvasWidth) / label.length;
     let yAxis = this.canvasYstartPoint;
+    
     for(let i = 0; i< label.length; i++){
         if(i > 0){
             this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
@@ -276,7 +295,7 @@ class webCharts {
                                         style="stroke:#000000;stroke-width:1" />`;
   }
 
-  drawLineGraph(coordinates,lineColor,index){
+  drawLineGraphforSmallData(coordinates,lineColor,index){
     //stroke grapf line according to coordinates
     this.strokeThemeColor = lineColor;
     let x1 = this.canvasXstartPoint;
