@@ -355,7 +355,7 @@ class webCharts {
     let heightOfSVG = this.canvasActualHeight - y1;
     console.log("this.allCoords...",this.allCoords);
     
-    let l1 = this.canvasWidth / coordinates.length;
+    let l1 = (this.canvasWidth - 10) / coordinates.length; // minus 10 for extra padding on right side of graph
     let l2 = this.canvasHeight - coordinates[0].value;
     let path = "L";//` L${l1} ${l2},`;
     let nwL1 = l1+this.canvasYstartPoint;
