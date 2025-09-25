@@ -54,11 +54,12 @@ class webCharts {
     this.drawVerticalLine(xAxisLabels,this.data.xAxis.data,this.data.yAxis.label);
     
     //draw lineGraph
-    // for(let i = 0; i< this.dataToDraw.length; i++){
-    //     let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
-    //     this.drawLineGraphforSmallData(this.dataToDraw[i],lineColour,i);
-    //     //this.drawCirClePoint(this.dataToDraw[i]);
-    // }
+    for(let i = 0; i< this.dataToDraw.length; i++){
+        let lineColour = this.lineColors[Math.floor(Math.random() * 10)]
+        this.drawLineGraphforSmallData(this.dataToDraw[i],lineColour,i);
+        this.drawLineGraphPath(this.dataToDraw[i],lineColour,i);
+        //this.drawCirClePoint(this.dataToDraw[i]);
+    }
 
     this.drawZeroLine();
     //setTimeout(()=>{
@@ -334,6 +335,52 @@ class webCharts {
         x1 = coordinates[i]['verticalCoordinates'];
         y1 = y2
     }
+  }
+
+//   <p>12,34,33,46,8,90,100,2,6</p>
+// <svg height="200" width="600" style="border:1px solid black" xmlns="http://www.w3.org/2000/svg">
+// <path  d="M0 200 L66,188 132,166 198,67 264,154" 
+//   style="fill:none;stroke:green;stroke-width:3" />
+//   <svg height="200" width="600" style="border:1px solid black" xmlns="http://www.w3.org/2000/svg">
+//   <polyline points="0,200 66,188 132,166 198,67 264,154" style="fill:none;stroke:green;stroke-width:3" />
+
+
+  drawLineGraphPath(coordinates,lineColor,index){
+    //stroke grapf line according to coordinates
+    this.strokeThemeColor = lineColor;
+    let x1 = this.canvasXstartPoint;
+    let x2;
+    let y1 = this.canvasYstartPoint;
+    let y2 ;
+    let heightOfSVG = this.canvasActualHeight - y1;
+    console.log("this.allCoords...",this.allCoords);
+    
+    let l1 = this.canvasWidth / coordinates.length;
+    let l2 = this.canvasHeight - coordinates[0].value;
+    let path = "L";//` L${l1} ${l2},`;
+    let nwL1 = l1+this.canvasYstartPoint;
+    for(let i = 1; i< coordinates.length; i++){
+        console.log("mmm...",coordinates[i],heightOfSVG)
+        nwL1 = l1+nwL1;
+        l2 = this.canvasHeight - coordinates[i].value;
+        path = path+`${nwL1} ${l2},`;
+        
+        this.drawCirClePointWithOutLoop(nwL1,l2);
+        this.drawCirCaptionWithText(nwL1,l2,
+            this.data.xAxis.label[i],coordinates[i]['value'],
+            this.data.yAxis.label, this.strokeThemeColor,coordinates);
+        
+        // if(index == this.bigLenData[0]['indx']){
+        //     this.drawInvisibleGridForMouseEvent(x2,coordinates)
+        // }
+       
+
+        // x1 = coordinates[i]['verticalCoordinates'];
+        // y1 = y2
+    }
+    let finalPath = `<path  d="M${x1} ${heightOfSVG},` + path + '" style="fill:none;stroke:green;stroke-width:3" />';
+    this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
+    ${finalPath}` ;
   }
 
   drawCirClePointWithOutLoop(x,y){

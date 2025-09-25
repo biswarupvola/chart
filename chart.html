@@ -32,23 +32,25 @@ Your browser does not support the HTML canvas tag.</canvas> -->
     // let devider = 55;
     let dataHuge= []; let dataHugeLabel = [];
     let tmp;
-    for(let i = 0; i< 1000; i++){
+    for(let i = 0; i< 20; i++){
         tmp = (Math.random() * 400).toFixed(2)
         dataHuge.push(parseInt(tmp))
     }
-    for(let i = 1; i<= 60; i++){
+    for(let i = 1; i<= 20; i++){
         dataHugeLabel.push(i)
     }
-    console.log(dataHuge)
-    let data2 = [123,349,10,47,12,-23,-44,-72,46,23,64,166];
+    // console.log(dataHuge)
+    let data2 = [123,349,10,47,12,23,44,72,46,23,64,166,300,12,60,20];
     let data1 = [223,49,0,47,320];
     let data3 = [13,33,45,47,132,162,84,52];
+    console.log(data2)
     let data = {
            xAxis:{
-                //  label:["Jan","feb","mar","april","may","jun","jul","august","sep","oct","nov","dec"],
-                //  data:[data1,data2,data3]
-                label:dataHugeLabel,
-                data:[dataHuge]
+                 //label:["Jan","feb","mar","april","may","jun","jul","august","sep","oct","nov","dec"],
+                 //data:[data2]
+                 //data:[data1,data2,data3]
+                 label:dataHugeLabel,
+                 data:[dataHuge]
                },
            yAxis:{
             label:"$"
