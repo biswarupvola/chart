@@ -298,7 +298,7 @@ class webCharts {
 
   drawLineGraphforSmallData(coordinates,lineColor,index){
     //stroke grapf line according to coordinates
-    this.strokeThemeColor = lineColor;
+    this.strokeThemeColor = "black";//lineColor;
     let x1 = this.canvasXstartPoint;
     let x2;
     let y1 = this.canvasYstartPoint;
@@ -352,31 +352,29 @@ class webCharts {
     let x2;
     let y1 = this.canvasYstartPoint;
     let y2 ;
-    let heightOfSVG = this.canvasActualHeight - y1;
+    let heightOfSVG = this.canvasHeight - coordinates[0].value;;
     console.log("this.allCoords...",this.allCoords);
     
     let l1 = (this.canvasWidth - 10) / coordinates.length; // minus 10 for extra padding on right side of graph
     let l2 = this.canvasHeight - coordinates[0].value;
+    let l3 = "";
     let path = "L";//` L${l1} ${l2},`;
     let nwL1 = l1+this.canvasYstartPoint;
+    let nwL2 = this.canvasYstartPoint;
     for(let i = 1; i< coordinates.length; i++){
         console.log("mmm...",coordinates[i],heightOfSVG)
-        nwL1 = l1+nwL1;
+        
         l2 = this.canvasHeight - coordinates[i].value;
+        l3 = this.canvasHeight - coordinates[i-1].value;
         path = path+`${nwL1} ${l2},`;
         
-        this.drawCirClePointWithOutLoop(nwL1,l2);
-        this.drawCirCaptionWithText(nwL1,l2,
-            this.data.xAxis.label[i],coordinates[i]['value'],
+        this.drawCirClePointWithOutLoop(nwL2,l3);
+        this.drawCirCaptionWithText(nwL2,l3,
+            this.data.xAxis.label[i],coordinates[i-1]['value'],
             this.data.yAxis.label, this.strokeThemeColor,coordinates);
         
-        // if(index == this.bigLenData[0]['indx']){
-        //     this.drawInvisibleGridForMouseEvent(x2,coordinates)
-        // }
-       
-
-        // x1 = coordinates[i]['verticalCoordinates'];
-        // y1 = y2
+            nwL1 = l1+nwL1;
+            nwL2 = l1+nwL2;
     }
     let finalPath = `<path  d="M${x1} ${heightOfSVG},` + path + '" style="fill:none;stroke:green;stroke-width:3" />';
     this.canvas.childNodes[0].innerHTML = `${this.canvas.childNodes[0].innerHTML}
